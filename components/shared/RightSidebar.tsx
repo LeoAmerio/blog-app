@@ -5,24 +5,24 @@ import RenderTag from './RenderTag';
 
 const RightSidebar = () => {
   const hotQuestions = [
-    { id: 1, title: "How to use React Query with Next.js?" },
-    { id: 2, title: "What is F1?" },
-    { id: 3, title: "Where is the future of CS55?" },
-    { id: 4, title: "How to use React Query with Next.js?"},
-    { id: 5, title: "Cascading deletes in SQLAlchemy" },
+    { id: '1', title: "How to use React Query with Next.js?" },
+    { id: '2', title: "What is F1?" },
+    { id: '3', title: "Where is the future of CS55?" },
+    { id: '4', title: "How to use React Query with Next.js?"},
+    { id: '5', title: "Cascading deletes in SQLAlchemy" },
   ];
 
   const popularTags = [
-    { id: 1, title: "React", totalQuestions: 5 },
-    { id: 2, title: "Next.js", totalQuestions: 10 },
-    { id: 3, title: "Python", totalQuestions: 4 },
-    { id: 4, title: "C++", totalQuestions: 0 },
-    { id: 5, title: "JavaScript", totalQuestions: 2 },
-    { id: 6, title: "TypeScript", totalQuestions: 3 },
-    { id: 7, title: "Django", totalQuestions: 1 },
-    { id: 8, title: "Flask", totalQuestions: 1 },
-    { id: 9, title: "FastAPI", totalQuestions: 5 },
-    { id: 10, title: "Node.js", totalQuestions: 0 },
+    { id: '1', title: "React", totalQuestions: 5 },
+    { id: '2', title: "Next.js", totalQuestions: 10 },
+    { id: '3', title: "Python", totalQuestions: 4 },
+    { id: '4', title: "C++", totalQuestions: 0 },
+    { id: '5', title: "JavaScript", totalQuestions: 2 },
+    { id: '6', title: "TypeScript", totalQuestions: 3 },
+    { id: '7', title: "Django", totalQuestions: 1 },
+    { id: '8', title: "Flask", totalQuestions: 1 },
+    { id: '9', title: "FastAPI", totalQuestions: 5 },
+    { id: '10', title: "Node.js", totalQuestions: 0 },
   ]
 
   return (
