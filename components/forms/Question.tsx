@@ -15,17 +15,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { QuestionsSchema } from "@/lib/validations";
-import { useRef } from "react";
-import { Editor } from '@tinymce/tinymce-react';
+import { useRef, useState } from "react";
+import { Editor } from "@tinymce/tinymce-react";
+import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+
+const type: any = 'edit';
 
 const Question = () => {
   const editorRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const log = () => {
-    if (editorRef.current) {
-      console.log(editorRef.current.getContent());
-    }
-  };
+  // const log = () => {
+  //   if (editorRef.current) {
+  //     console.log(editorRef.current.getContent());
+  //   }
+  // };
 
   const form = useForm<z.infer<typeof QuestionsSchema>>({
     resolver: zodResolver(QuestionsSchema),
@@ -36,10 +41,53 @@ const Question = () => {
     },
   });
 
-  // 2. Define a submit handler.
+  const handleInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    field: any
+  ) => {
+    if (e.key === "Enter" && field.name === "tags") {
+      e.preventDefault();
+      const tagInput = e.target as HTMLInputElement;
+      const tag = tagInput.value.trim();
+
+      if (tag !== "") {
+        if (tag.length > 15) {
+          return form.setError("tags", {
+            type: "required",
+            message: "Tag must be less than 15 characters",
+          });
+        }
+
+        if (!field.value.includes(tag as never)) {
+          form.setValue("tags", [...field.value, tag]);
+          tagInput.value = "";
+          form.clearErrors("tags");
+        } else {
+          form.trigger();
+        }
+      }
+    }
+  };
+
+  const handleRemoveTag = (tag: string, field: any) => {
+    const newTags = field.value.filter((t: string) => t !== tag);
+
+    form.setValue("tags", newTags);
+  };
+
   function onSubmit(values: z.infer<typeof QuestionsSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+    setIsSubmitting(true);
+
+    try {
+      // make an async call to api -> create a question
+      // contain all form data
+
+      // navigate to home page
+    } catch (error) {
+      
+    } finally {
+      setIsSubmitting(false);
+    }
     console.log(values);
   }
 
@@ -92,7 +140,8 @@ const Question = () => {
                       "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks codesample wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown",
                     toolbar:
                       "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | codesample | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
-                    content_style: 'body { font-family:Inter,Helvetica,Arial,sans-serif; font-size:16px }',
+                    content_style:
+                      "body { font-family:Inter,Helvetica,Arial,sans-serif; font-size:16px }",
                     tinycomments_mode: "embedded",
                     tinycomments_author: "Author name",
                     mergetags_list: [
@@ -126,11 +175,34 @@ const Question = () => {
                 <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl className="mt-3.5">
-                <Input
-                  placeholder="Add tags..."
-                  {...field}
-                  className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border"
-                />
+                <>
+                  <Input
+                    placeholder="Add tags..."
+                    onKeyDown={(e) => handleInputKeyDown(e, field)}
+                    className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border"
+                  />
+
+                  {field.value.length > 0 && (
+                    <div className="flex-start mt-2.5 gap-2.5">
+                      {field.value.map((tag: any) => (
+                        <Badge
+                          key={tag}
+                          onClick={() => handleRemoveTag(tag, field)}
+                          className="sbtle-medium background-light800_dark300 text-light400_light500 flex items-center justify-center gap-2 rounded-md border-none px-4 py-2 capitalize"
+                        >
+                          {tag}
+                          <Image
+                            src="/assets/icons/close.svg"
+                            alt="Close icon"
+                            width={12}
+                            height={12}
+                            className="cursor-pointer object-contain invert-0 dark:invert"
+                          />
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </>
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
                 Add up to 3 tags to describe what your question is about. You
@@ -140,7 +212,21 @@ const Question = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button
+          type="submit"
+          className="primary-gradient w-fit !text-light-900"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              {type === 'edit' ? 'Editing...' : 'Posting...'}
+            </>
+          ) : (
+            <>
+              {type === 'edit' ? 'Edit Question' : 'Ask a Question'}
+            </>
+          )}
+        </Button>
       </form>
     </Form>
   );
