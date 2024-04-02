@@ -19,12 +19,20 @@ import { useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { createQuestion } from '@/lib/actions/question.action';
+import { useRouter, usePathname } from 'next/navigation';
+interface Props {
+  mongoUserId: string;
+}
 
-const type: any = 'edit';
+const type: any = 'create';
 
-const Question = () => {
+const Question = ({ mongoUserId }: Props) => {
   const editorRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   // const log = () => {
   //   if (editorRef.current) {
@@ -75,14 +83,22 @@ const Question = () => {
     form.setValue("tags", newTags);
   };
 
-  function onSubmit(values: z.infer<typeof QuestionsSchema>) {
+  async function onSubmit(values: z.infer<typeof QuestionsSchema>) {
     setIsSubmitting(true);
 
     try {
       // make an async call to api -> create a question
       // contain all form data
 
+      await createQuestion({
+        title: values.title,
+        content: values.explanation,
+        tags: values.tags,
+        author: JSON.parse(mongoUserId), 
+      });
+      console.log('Title', values.title);
       // navigate to home page
+      router.push('/');
     } catch (error) {
       
     } finally {
@@ -133,6 +149,8 @@ const Question = () => {
               <FormControl className="mt-3.5">
                 <Editor
                   apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
+                  // @ts-ignore
+                  onInit={(evt, editor) => (editorRef.current = editor)}
                   init={{
                     height: 350,
                     menubar: false,
@@ -154,6 +172,8 @@ const Question = () => {
                         Promise.reject("See docs to implement AI Assistant")
                       ),
                   }}
+                  onBlur={field.onBlur}
+                  onEditorChange={(content) => field.onChange(content)}
                   initialValue=""
                 />
               </FormControl>
