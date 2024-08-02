@@ -6,6 +6,7 @@ import NoResults from '@/components/shared/NoResults';
 import LocalSearchbar from '@/components/shared/search/LocalSearchbar';
 import { Button } from '@/components/ui/button';
 import { HomePageFilters } from '@/constants/filters';
+import { getQuestions } from '@/lib/actions/question.action';
 import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 
@@ -41,7 +42,12 @@ const questions = [
 ];
 
 
-export default function Home() {
+export default async function Home() {
+
+  const result = await getQuestions({});
+
+  console.log('Result: ', result);
+
   return (
     <>
       {/* <Portfolio /> */}
@@ -72,8 +78,8 @@ export default function Home() {
       <HomeFilters />
 
       <div className="mt-10 flex w-full flex-col gap-6">
-        { questions.length > 0 ? ( 
-            questions.map((question) => (
+        { result.questions.length > 0 ? ( 
+            result.questions.map((question) => (
               <QuestionCard
                 key={question.id}
                 id={question.id}

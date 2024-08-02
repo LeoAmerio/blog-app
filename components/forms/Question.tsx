@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { createQuestion } from '@/lib/actions/question.action';
 import { useRouter, usePathname } from 'next/navigation';
+
 interface Props {
   mongoUserId: string;
 }
@@ -48,6 +49,30 @@ const Question = ({ mongoUserId }: Props) => {
       tags: [],
     },
   });
+
+  //2. Define a submit handler
+  async function onSubmit(values: z.infer<typeof QuestionsSchema>) {
+    setIsSubmitting(true);
+
+    try {
+      // make an async call to api -> create a question
+      // contain all form data
+
+      await createQuestion({
+        title: values.title,
+        content: values.explanation,
+        tags: values.tags,
+        author: JSON.parse(mongoUserId),
+        path: pathname,
+      });
+
+      router.push('/');
+    } catch (error) {
+      
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   const handleInputKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -83,29 +108,29 @@ const Question = ({ mongoUserId }: Props) => {
     form.setValue("tags", newTags);
   };
 
-  async function onSubmit(values: z.infer<typeof QuestionsSchema>) {
-    setIsSubmitting(true);
+  // async function onSubmit(values: z.infer<typeof QuestionsSchema>) {
+  //   setIsSubmitting(true);
 
-    try {
-      // make an async call to api -> create a question
-      // contain all form data
+  //   try {
+  //     // make an async call to api -> create a question
+  //     // contain all form data
 
-      await createQuestion({
-        title: values.title,
-        content: values.explanation,
-        tags: values.tags,
-        author: JSON.parse(mongoUserId), 
-      });
-      console.log('Title', values.title);
-      // navigate to home page
-      router.push('/');
-    } catch (error) {
+  //     await createQuestion({
+  //       title: values.title,
+  //       content: values.explanation,
+  //       tags: values.tags,
+  //       author: JSON.parse(mongoUserId), 
+  //     });
+  //     console.log('Title', values.title);
+  //     // navigate to home page
+  //     router.push('/');
+  //   } catch (error) {
       
-    } finally {
-      setIsSubmitting(false);
-    }
-    console.log(values);
-  }
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  //   console.log(values);
+  // }
 
   return (
     <Form {...form}>
